@@ -35,19 +35,44 @@ def get_notes_and_type_of_duration(dic, title):
     return notes_and_type_of_duration
 
 def get_notes_and_durations(dic, title):
-    
-    notes_and_durations = []
+    L = get_notes(dic, title)
+    notes_and_durations = [[],[]]
     for i in get_notes(dic, title):
         duration = i[len(i)-1]
-        i = i[0:len(i)-1]
-        notes_and_durations.append(i)
-        if duration == "c":
-            notes_and_durations.append("125")
-        elif duration == "n":
-            notes_and_durations.append("250")
-        elif duration == "b":
-            notes_and_durations.append("500")
-        else:
-            notes_and_durations.append("1000")
-    return notes_and_durations
+        note = i[0:len(i)-1]
 
+        # We transform the note by the associated frequency in Hz
+
+        if note == "DO":
+            note = 264
+        elif note == "RE":
+            note = 297
+        elif note == "MI":
+            note = 330
+        elif note == "FA":
+            note = 352
+        elif note == "SOL":
+            note = 396
+        elif note == "LA":
+            note = 440
+        elif note == "SI":
+            note = 495
+
+        # We transform the letter by the associated time in ms
+
+        if duration == "c":
+            duration = 125
+        elif duration == "n":
+            duration = 250
+        elif duration == "b":
+            duration = 500
+        else:
+            duration = 1000
+
+
+
+
+        notes_and_durations[0].append(note)
+        notes_and_durations[1].append(duration)
+
+    return notes_and_durations

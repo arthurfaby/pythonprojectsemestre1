@@ -13,10 +13,6 @@ L = partitions.read()
 L = L.split("\n")
 
 partitions.close()
-
-
-
-print(len(L))
 for i in range(1,len(L)+1):
     if i%2 == 1:
         title_init = L[i-1]
@@ -29,7 +25,7 @@ for i in range(1,len(L)+1):
         
 
 
-print(f.get_notes_and_type_of_duration(dic,  "Au feu les pompiers"))
+print(f.get_notes_and_durations(dic,  "Au feu les pompiers"))
 
 #dic = {}
 #dic["Frère Jacques"] = "SOL"
