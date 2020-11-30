@@ -69,9 +69,6 @@ def get_notes_and_durations(dic, title):
         else:
             duration = 1000
 
-
-
-
         notes_and_durations[0].append(note)
         notes_and_durations[1].append(duration)
 
