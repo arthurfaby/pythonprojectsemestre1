@@ -1,2 +1,5 @@
-"# pythonprojectsemestre1" 
-"# pythonprojectsemestre1" 
+Projet Python premier Semestre 
+
+EFREI Paris
+
+Arthur Faby et Yannick Barbé
