@@ -1,26 +1,26 @@
 from time import sleep
-import numpy as np
-import simpleaudio as sa
+from initdics import *
 import turtle as tr
+import simpleaudio as sa
+import numpy as np
 
-def set_dic_title_and_writed_notes():
-    partitions = open("partitions.txt", "r", encoding="utf-8")
-    dic_title_and_writed_notes = {}
+dic_numerical_notes = {}
+partitions = open("partitions.txt", "r", encoding="utf-8")
+
+
+
+def get_titles(dic_partitions):
     titles = []
-    notes = []
-    L = partitions.read()
-    L = L.split("\n")
-    for i in range(1,len(L)+1):
-        if i%2 == 1:
-            title_init = L[i-1]
-            title_init = title_init[title_init.index(' ')+1:]
-            titles.append(title_init)
-        else:
-            notes_init = L[i-1]
-            notes.append(notes_init)
-            dic_title_and_writed_notes[title_init] = notes_init
-    return dic_title_and_writed_notes
+    for i in dic_partitions.keys():
+        titles.append(i)
+    dic_titles = titles
+    return titles
 
+def get_notes(dic_partitions):
+    notes = []
+    for i in dic_partitions.keys():
+        notes.append(dic_partitions[i])
+    return notes
 
 
 def sound(freq,duration):
@@ -39,65 +39,67 @@ def sound(freq,duration):
     play_obj=sa.play_buffer(audio,1,3,sample_rate)
     play_obj.wait_done()
 
-def get_notes(dic_title_and_writed_notes, title):
-    notes = dic_title_and_writed_notes[title]
-    notes = notes.split(" ")
-    return notes
-
-def get_notes_and_type_of_duration(dic_title_and_writed_notes, title):
-    
-    notes_and_type_of_duration = []
-    for i in get_notes(dic_title_and_writed_notes, title):
-        duration = i[len(i)-1]
-        i = i[0:len(i)-1]
-        notes_and_type_of_duration.append(i)
-        notes_and_type_of_duration.append(duration)
-    return notes_and_type_of_duration
-
-def get_notes_and_durations(dic_title_and_writed_notes, title):
-    L = get_notes(dic_title_and_writed_notes, title)
-    notes_and_durations = [[],[]]
-    for i in get_notes(dic_title_and_writed_notes, title):
-        duration = i[len(i)-1]
-        note = i[0:len(i)-1]
-
-        # We transform the note by the associated a number
-
-        if note == "DO":
-            note = 1
-        elif note == "RE":
-            note = 2
-        elif note == "MI":
-            note = 3
-        elif note == "FA":
-            note = 4
-        elif note == "SOL":
-            note = 5
-        elif note == "LA":
-            note = 6
-        elif note == "SI":
-            note = 7
-
-        # We transform the letter by the associated time in ms
-
-
-        if duration == "c":
-            duration = 125
-        elif duration == "n":
-            duration = 250
-        elif duration == "b":
-            duration = 500
-        else:
-            duration = 1000
-
-        notes_and_durations[0].append(note)
-        notes_and_durations[1].append(duration)
-
-    return notes_and_durations
-
 
 def add_partition(title, notes):
     partitions = open("partitions.txt", "a", encoding="utf-8")
     partitions.write("\n" + title + "\n")
     partitions.write(notes)
 
+
+def get_freq_and_duration(dic_numerical_to_frequency, dic_coding_notes, dic_duration, dic_notes,dic_titles,title):
+    if title in dic_titles:
+        key = dic_titles.index(title)
+        all_notes = dic_notes[key]
+        separated_notes = []
+        separated_notes = all_notes.split(" ")
+
+        notes_seq = []
+        index = 0
+        n_of_p = 0
+        for i in separated_notes:
+            if i == "p":
+                notes_seq[index-(1+n_of_p)] = notes_seq[index-(1+n_of_p)] + "p"
+                n_of_p += 1
+            else:
+                notes_seq.append(i[0:-1])
+            index+=1
+
+        type_seq = []
+        for i in separated_notes:
+            if i != "p":
+                type_seq.append(i[-1])
+
+        duration_seq = []
+        index = 0
+        for i in type_seq:
+            if "p" in notes_seq[index]:
+                duration_seq.append(dic_duration[i]*1.5)
+                notes_seq[index] = notes_seq[index][0:-1]
+            else:
+                duration_seq.append(dic_duration[i])
+            index += 1
+
+        num_notes = []
+        for i in notes_seq:
+            num_notes.append(dic_coding_notes[i])
+            
+
+        freq_seq = []
+        for i in num_notes:
+            freq_seq.append(dic_numerical_to_frequency[i])
+
+    else:
+        print("This title does not exist in the database.")
+    
+    return freq_seq, duration_seq
+
+def play_sound(dic_numerical_to_frequency, dic_coding_notes, dic_duration, dic_notes, dic_titles,title):
+    freq_seq, duration_seq = get_freq_and_duration(dic_numerical_to_frequency, dic_coding_notes, dic_duration, dic_notes, dic_titles,title)
+    for i in range(len(freq_seq)):
+        if freq_seq[i] == -1:
+            sleep(duration_seq[i])
+        else:
+            sound(freq_seq[i], duration_seq[i])
+
+def test(g):
+    print(g)
